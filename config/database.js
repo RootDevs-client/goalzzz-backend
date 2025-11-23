@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const connectToDatabase = async databaseURL => {
+const connectToDatabase = async () => {
+  const databaseURL = process.env.DATABASE_URI;
+
   try {
     await mongoose.connect(databaseURL, {
       useNewUrlParser: true,

@@ -25,7 +25,7 @@ const app = express();
 const env = process.env.NODE_ENV || "development";
 
 // Connect to MongoDB with Mongoose
-connectToDatabase(config[env].databaseURI);
+connectToDatabase();
 
 // Middleware
 app.use(morgan("dev"));
