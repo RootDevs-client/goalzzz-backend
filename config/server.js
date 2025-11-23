@@ -29,7 +29,7 @@ connectToDatabase(config[env].databaseURI);
 
 // Middleware
 app.use(morgan("dev"));
-app.use(cors(config[env].corsOptions));
+app.use(cors(process.env.CORS_ORIGINS));
 app.use(cookieParser());
 app.use((req, res, next) => {
   if (req.originalUrl === "/webhook") {
