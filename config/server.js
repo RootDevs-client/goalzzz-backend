@@ -18,7 +18,7 @@ const { ipHandler } = require("../src/controllers/ip/checkIP");
 const getUserIpMiddleware = require("../src/middlewares/getUserIpMiddleware");
 const accessController = require("../src/controllers/web/accessController");
 const { createUserByLink, loginUser } = require("../src/controllers/admin/createUserController");
-const stripeRouter = require("../src/controllers/webhook/stripeController");
+// const stripeRouter = require("../src/controllers/webhook/stripeController");
 const gatewayRouter = require("../src/controllers/webhook/gatewayController");
 
 const app = express();
