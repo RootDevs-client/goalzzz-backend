@@ -53,7 +53,7 @@ app.use(getUserIpMiddleware);
 
 app.use("/api/ip", ipHandler);
 
-app.use("/webhook", stripeRouter);
+// app.use("/webhook", stripeRouter);
 
 app.use("/PaymentGateway", gatewayRouter);
 
