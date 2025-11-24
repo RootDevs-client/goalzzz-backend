@@ -18,18 +18,18 @@ const { ipHandler } = require("../src/controllers/ip/checkIP");
 const getUserIpMiddleware = require("../src/middlewares/getUserIpMiddleware");
 const accessController = require("../src/controllers/web/accessController");
 const { createUserByLink, loginUser } = require("../src/controllers/admin/createUserController");
-const stripeRouter = require("../src/controllers/webhook/stripeController");
+// const stripeRouter = require("../src/controllers/webhook/stripeController");
 const gatewayRouter = require("../src/controllers/webhook/gatewayController");
 
 const app = express();
 const env = process.env.NODE_ENV || "development";
 
 // Connect to MongoDB with Mongoose
-connectToDatabase(config[env].databaseURI);
+connectToDatabase();
 
 // Middleware
 app.use(morgan("dev"));
-app.use(cors(config[env].corsOptions));
+app.use(cors(process.env.CORS_ORIGINS));
 app.use(cookieParser());
 app.use((req, res, next) => {
   if (req.originalUrl === "/webhook") {

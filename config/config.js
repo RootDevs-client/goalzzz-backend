@@ -3,16 +3,7 @@ require("dotenv").config();
 const config = {
   development: {
     corsOptions: {
-      origin: [
-        "http://localhost:3005",
-        "http://localhost:3000",
-        "http://192.168.10.14:3000",
-        "http://192.168.10.12:3000",
-        "http://192.168.10.14:3002",
-        process.env.CORS_ORIGINS,
-        "https://www.windfootball.xyz",
-        "https://xoom-sports-v3.vercel.app"
-      ],
+      origin: ["http://localhost:3000", process.env.CORS_ORIGINS],
       credentials: true
     },
     databaseURI: process.env.DEV_DATABASE_URL, // Use DEV_DATABASE_URL from .env

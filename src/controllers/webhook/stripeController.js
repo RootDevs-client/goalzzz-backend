@@ -1,5 +1,5 @@
 const express = require("express");
-const StripePay = require("../../services/stripePay");
+// const StripePay = require("../../services/stripePay"); // STRIPE DISABLED
 const User = require("../../models/User");
 const Payment = require("../../models/Payment");
 const addTime = require("../../helpers/addTime");
@@ -7,18 +7,27 @@ const { unsubscribeUserFromStarGame, extendUserSubscriptionToStarGame, registerU
 
 const stripeRouter = express.Router();
 
-const stripe = new StripePay(process.env.STRIPE_SECRET_KEY);
+// const stripe = new StripePay(process.env.STRIPE_SECRET_KEY); // STRIPE DISABLED
 
 const IS_DEV = process.env.NODE_ENV === "development";
 
 stripeRouter.post("/", express.raw({ type: "application/json" }), async (req, res, next) => {
   try {
+    /*
+    ------------------------------
+      STRIPE WEBHOOK HANDLING DISABLED
+    ------------------------------
+
     const sig = req.headers["stripe-signature"];
 
     let event;
 
     try {
-      event = stripe.stripe.webhooks.constructEvent(req.body, sig, process.env.ENDPOINT_SECRET);
+      event = stripe.stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.ENDPOINT_SECRET
+      );
     } catch (err) {
       res.status(400).send(`Webhook Error: ${err.message}`);
       return;
@@ -26,7 +35,7 @@ stripeRouter.post("/", express.raw({ type: "application/json" }), async (req, re
 
     const metadata = event.data.object?.metadata;
     if (!metadata) {
-      res.status(400).send("Missing metadata in the checkout session");
+      res.status(400).send("Missing metadata in checkout session");
       return;
     }
 
@@ -45,19 +54,24 @@ stripeRouter.post("/", express.raw({ type: "application/json" }), async (req, re
         payment.status = "failed";
         payment.save();
         break;
+
       case "checkout.session.async_payment_succeeded":
         invoiceRes = await stripe.retrieveInvoiceInfo(invoice);
-
         user.paymentMethod = invoiceRes?.payment_intent?.payment_method?.card.brand;
-        user.expiresAt = addTime(user?.expiresAt, user?.subscription?.duration_type || payment?.subscription?.duration_type);
+        user.expiresAt = addTime(
+          user?.expiresAt,
+          user?.subscription?.duration_type || payment?.subscription?.duration_type
+        );
         user.SubscribedAt = Date.now().toString();
         user.paid = true;
         user.stripeCustomerId = customer;
         user.subscriptionId = subscription;
         await user.save();
+
         payment.status = "completed";
         payment.trxnId = event.data?.object?.id;
         await payment.save();
+
         !IS_DEV &&
           (await registerUserToStarGame({
             phone: user.phone,
@@ -66,18 +80,24 @@ stripeRouter.post("/", express.raw({ type: "application/json" }), async (req, re
             expDate: user.expiresAt
           }));
         break;
+
       case "checkout.session.completed":
         invoiceRes = await stripe.retrieveInvoiceInfo(invoice);
         user.paymentMethod = invoiceRes?.payment_intent?.payment_method?.card.brand;
-        user.expiresAt = addTime(user?.expiresAt, user?.subscription?.duration_type || payment?.subscription?.duration_type);
+        user.expiresAt = addTime(
+          user?.expiresAt,
+          user?.subscription?.duration_type || payment?.subscription?.duration_type
+        );
         user.SubscribedAt = Date.now().toString();
         user.paid = true;
         user.stripeCustomerId = customer;
         user.subscriptionId = subscription;
         await user.save();
+
         payment.trxnId = event.data?.object?.id;
         payment.status = "completed";
         await payment.save();
+
         !IS_DEV &&
           (await registerUserToStarGame({
             phone: user.phone,
@@ -86,48 +106,51 @@ stripeRouter.post("/", express.raw({ type: "application/json" }), async (req, re
             expDate: user.expiresAt
           }));
         break;
+
       case "checkout.session.expired":
         payment.trxnId = event.data?.object?.id;
         payment.status = "expired";
         payment.save();
         break;
+
       case "customer.subscription.deleted":
         user = await User.findOne({ stripeCustomerId: event.data.object.customer });
-        // user.subscription = undefined;
-        // user.paid = false;
-        // user.expiresAt = "";
         user.stripeCustomerId = "";
         user.subscriptionId = "";
-        // !IS_DEV &&
-        //   (await unsubscribeUserFromStarGame({
-        //     phone: user.phone,
-        //     reference: user?.reference,
-        //   }));
         await user.save();
+        break;
+
       case "invoice.payment_succeeded":
         try {
           invoiceRes = await stripe.retrieveInvoiceInfo(event?.data?.object?.id);
-          if (invoiceRes?.billing_reason === "subscription_update" || invoiceRes?.billing_reason === "subscription_cycle") {
+          if (
+            invoiceRes?.billing_reason === "subscription_update" ||
+            invoiceRes?.billing_reason === "subscription_cycle"
+          ) {
             user = await User.findOne({
               stripeCustomerId: invoiceRes.customer
             }).populate("subscription");
+
             user.expiresAt = addTime(user?.expiresAt, user?.subscription?.duration_type);
             user.paid = true;
             await user.save();
+
             !IS_DEV &&
               (await extendUserSubscriptionToStarGame({
                 phone: user.phone,
                 expDate: user.expiresAt
               }));
           }
-          break;
         } catch (err) {
           console.log(err.message);
         }
+        break;
 
       default:
     }
-    return res.status(200).send("ok");
+    */
+
+    return res.status(200).send("Stripe disabled");
   } catch (err) {
     console.log(err);
     next(err);
